@@ -1,42 +1,56 @@
 ---
 name: Build Manager Anthem Agent
-overview: Build the Manager agent as a lean Anthem instance (channel-only mode) with a small upstream Anthem change, Prism auto-clone integration, and a lightweight WORKFLOW.md + CLAUDE.md focused on portfolio-level oversight via claude -p.
+overview: "Build Manager as a full Anthem orchestrator agent with lean /fast path. Includes upstream Anthem changes (handleLeanMessage, optional tracker, /fast routing), Prism integration (auto-clone, unified Manager tab, /fast slash command), and Manager project files."
 todos:
   - id: anthem-lean-mode
     content: Add handleLeanMessage fallback in Anthem's orchestrator.go -- invoke claude -p when orchAgent is nil, stream response back through channel
-    status: pending
+    status: completed
   - id: anthem-optional-tracker
-    content: Make tracker config optional in Anthem's main.go -- skip poller/tracker when tracker.kind is empty, only run channel listener
-    status: pending
+    content: Make tracker config optional in Anthem's main.go and validator.go -- skip poller/tracker when tracker.kind is empty
+    status: completed
+  - id: anthem-fast-routing
+    content: "Route [system:fast] and [system:status] messages to handleLeanMessage even when orchestrator is enabled"
+    status: completed
   - id: manager-workflow
-    content: Write Manager's WORKFLOW.md -- channel-only config (no tracker, orchestrator disabled, read-only tools, Prism on port 3106) + portfolio-aware prompt template
-    status: pending
+    content: "Write Manager's WORKFLOW.md -- full orchestrator config with GitHub tracker, /fast handled by Anthem's lean path automatically"
+    status: completed
   - id: manager-claude-md
-    content: Write Manager's CLAUDE.md -- lightweight portfolio context, sibling project list, display output format, read-only constraints
-    status: pending
+    content: Write Manager's CLAUDE.md -- dual-mode architecture, portfolio context, sibling project list, display output format
+    status: completed
   - id: manager-gitignore
     content: Write Manager's .gitignore
-    status: pending
+    status: completed
   - id: prism-auto-clone
     content: Add ensure_manager() to Prism's setup.py mirroring the ensure_forge pattern
-    status: pending
+    status: completed
   - id: prism-agents-yaml
-    content: "Add repo: rauriemo/manager to Prism's agents.yaml manager entry"
-    status: pending
+    content: "Update Prism's agents.yaml -- unified manager entry with repo field"
+    status: completed
+  - id: prism-fast-command
+    content: "Add universal /fast slash command in Prism frontend -- routes [system:fast] prefix through lean path on any agent tab"
+    status: completed
+  - id: prism-unified-tab
+    content: "Merge built-in Manager tab with manager agent -- add agentId, prevent duplicate tabs in useWebSocket.ts"
+    status: completed
+  - id: prism-welcome-update
+    content: "Update Prism welcome/dashboard pages to list /fast command"
+    status: completed
   - id: anthem-lean-status
-    content: "Add lean_mode flag to HandleUserMessage: when incoming text contains [system:status], use handleLeanMessage (claude -p) even if orchAgent is present"
-    status: pending
+    content: "Route [system:status] through handleLeanMessage (claude -p) even when orchestrator is present"
+    status: completed
   - id: push-and-verify
     content: Commit and push all changes across Manager, Anthem, and Prism repos
-    status: pending
+    status: completed
 isProject: false
 ---
 
-# Build Manager Anthem Agent (Lean/Channel-Only Mode)
+# Build Manager Anthem Agent
 
 ## Architecture Decision
 
-Manager is an Anthem instance running in **lean channel-only mode**: no issue tracker, no orchestrator session, no workspaces. Channel messages from Prism are routed directly to a `claude -p` invocation with gathered cross-project context. The Prism WebSocket adapter (auth, req/res, stream, display frames) works out of the box.
+Manager is a **full Anthem orchestrator agent** that also has a lean `/fast` path for instant portfolio queries. Regular messages go through the complete orchestrator pipeline (GitHub issue tracking, multi-turn Claude sessions, workspace management). `/fast` messages bypass the orchestrator and invoke `claude -p` directly via Anthem's `handleLeanMessage`.
+
+This evolved from the original "lean channel-only" concept. The `/fast` slash command was added as a universal feature across all Prism agent tabs, giving every agent a lightweight conversational path alongside the full orchestrator.
 
 ```mermaid
 flowchart LR
@@ -204,12 +218,15 @@ Add `repo: rauriemo/manager` to the `manager` entry (currently missing, unlike a
 
 ## Scope Boundaries
 
-**In scope:**
-- Upstream Anthem lean mode (handleLeanMessage + optional tracker)
-- Lean /status for all agents (route `[system:status]` through `claude -p` even when orchestrator is enabled)
-- Manager WORKFLOW.md, CLAUDE.md, .gitignore
-- Prism setup.py auto-clone + agents.yaml repo field
-- Basic end-to-end: chat message in -> claude -p -> response out with streaming
+**Completed:**
+- Upstream Anthem lean mode (`handleLeanMessage` + optional tracker + validator updates)
+- Lean `/status` for all agents (route `[system:status]` through `claude -p` even when orchestrator is enabled)
+- Universal `/fast` slash command in Prism (route `[system:fast]` through lean path on any agent tab)
+- Manager as full orchestrator agent with `WORKFLOW.md`, `CLAUDE.md`, `.gitignore`, `README.md`, CI
+- Prism `setup.py` auto-clone + `agents.yaml` repo field
+- Unified Manager tab in Prism (built-in dashboard + agent chat, no duplicate tabs)
+- Welcome/dashboard pages updated with `/fast` command
+- Full test coverage across Prism frontend, Prism backend, and Anthem
 
 **Out of scope (future):**
 - Skills and MCP tools for Manager

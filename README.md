@@ -2,9 +2,9 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Manager** is a lightweight portfolio oversight agent for the [Anthem](https://github.com/rauriemo/anthem) ecosystem. It runs as an Anthem instance in lean channel-only mode -- no issue tracker, no orchestrator session, no workspaces, no code editing. It reads source code and metadata across all sibling agent projects and answers questions via `claude -p`.
+**Manager** is the portfolio oversight agent for the [Anthem](https://github.com/rauriemo/anthem) ecosystem. It runs as a full Anthem orchestrator agent that can maintain its own codebase via GitHub issues, while also serving as a fast portfolio analyst via the `/fast` slash command.
 
-Think of it as the "portfolio analyst" for your Anthem agents. It has cross-project visibility that individual agents lack -- ask it about status, code quality, test coverage, or CI health across the entire ecosystem.
+Regular messages go through the full orchestrator for thoughtful, multi-turn responses. `/fast <message>` bypasses the orchestrator for instant `claude -p` replies across all sibling projects. Think of it as a dual-mode agent: project maintainer + portfolio analyst in one.
 
 [Build plan](docs/plan.md) | [Anthem](https://github.com/rauriemo/anthem) (orchestrator) | [Prism](https://github.com/rauriemo/prism) (workstation) | [Forge](https://github.com/rauriemo/forge) (scaffolder) | [Dispatch](https://github.com/rauriemo/dispatch) (voice channel)
 
@@ -38,66 +38,62 @@ anthem run
 
 ```mermaid
 flowchart LR
-  User["User\n(Prism Manager tab)"] -->|"chat message"| Prism["Prism\n(React + FastAPI)"]
+  User["User\n(Prism Manager tab)"] -->|"chat or /fast"| Prism["Prism\n(React + FastAPI)"]
   Prism -->|"WebSocket req frame"| Adapter["Prism Adapter\n(port 3106)"]
-  Adapter -->|"IncomingMessage"| Lean["Lean path\n(handleLeanMessage)"]
-  Lean -->|"claude -p + context"| Claude["Claude CLI"]
-  Claude -->|"streamed response"| Lean
-  Lean -->|"stream + res/display frames"| Adapter
+  Adapter -->|"IncomingMessage"| Router["HandleUserMessage"]
+  Router -->|"regular message"| Orch["Full Orchestrator\n(issues, workspace, multi-turn)"]
+  Router -->|"/fast or /status"| Lean["Lean path\n(claude -p, single-shot)"]
+  Orch -->|"streamed response"| Adapter
+  Lean -->|"streamed response"| Adapter
   Adapter -->|"WebSocket"| Prism
   Prism -->|"render"| Display["Visual Canvas\n(dashboards, charts, data grids)"]
 ```
 
-1. User sends a chat message from Prism's Manager tab
-2. Prism forwards it over WebSocket to Manager (port 3106)
-3. Anthem's Prism adapter receives the message, routes to the lean message handler
-4. The handler builds a prompt from the user's message + portfolio context (`CLAUDE.md`)
-5. Invokes `claude -p` and streams stdout back as stream frames
-6. On completion, sends the full response as a res frame for chat history
-7. Any rich visual output (HTML dashboards, charts, data grids) is sent as display frames and rendered on Prism's visual canvas
+**Regular messages** go through the full Anthem orchestrator -- issue tracking, multi-turn Claude sessions, workspace management. This is how Manager maintains its own codebase.
+
+**`/fast` messages** bypass the orchestrator entirely. Anthem detects the `[system:fast]` prefix and routes to `handleLeanMessage`, which invokes `claude -p` for a single-shot response. Ideal for portfolio queries, status checks, and quick questions.
 
 ## Features
 
-- **Cross-project status reports**: Queries all sibling repos via `gh` CLI and local git for recent commits, open issues, CI status, and produces rich HTML summaries
-- **Code review and analysis**: Reads source code from any sibling project directory for reviews, suggestions, or analysis
-- **Portfolio health overview**: Aggregated metrics across all repos -- CI pass rates, issue counts, commit velocity
+- **Dual-mode operation**: Full orchestrator for project maintenance, `/fast` for instant portfolio queries
+- **Self-maintaining**: Tracks its own GitHub issues and can edit its own codebase via the orchestrator
+- **Cross-project analysis**: `/fast` queries read source code, git history, and GitHub data across all sibling repos
 - **Rich visual output**: HTML dashboards, data grids, charts, and markdown rendered in Prism's A2UI visual pane
-- **Lightweight and fast**: No orchestrator session, no executor pipeline. Each question is a single `claude -p` invocation
-- **Read-only**: Never edits, writes, commits, or pushes to any project. Analysis only
+- **`/fast` for any agent**: The `/fast` slash command works on every agent tab in Prism, not just Manager
 - **Context-aware**: Reads `CLAUDE.md` from each project for architecture context before answering
-
-## What Manager Does NOT Do
-
-- Edit, write, or create files in any project
-- Push, commit, or modify git state
-- Route or proxy messages to other agents
-- Run the full Anthem orchestrator/executor pipeline
-- Manage workspaces or track GitHub issues
 
 ## Configuration
 
 ### WORKFLOW.md
 
-Manager's `WORKFLOW.md` follows Anthem's format (YAML front matter + Go template body) but with minimal config:
+Manager's `WORKFLOW.md` follows Anthem's format (YAML front matter + Go template body) with full orchestrator config:
 
 ```yaml
 # Key settings (see WORKFLOW.md for full config)
+tracker:
+  kind: github
+  repo: "rauriemo/manager"
+
 orchestrator:
-  enabled: false          # No orchestrator -- lean mode only
+  enabled: true
 
 agent:
+  command: "claude"
+  max_turns: 10
   permission_mode: "dontAsk"
-  allowed_tools:          # Read-only tools
+  allowed_tools:
     - "Read"
+    - "Edit"
+    - "Write"
     - "Grep"
     - "Glob"
     - "Bash(git *)"
     - "Bash(gh *)"
-  denied_tools:           # No write access
-    - "Edit"
-    - "Write"
-    - "Bash(rm *)"
-    - "Bash(git push *)"
+  additional_dirs:
+    - "../prism"
+    - "../anthem"
+    - "../forge"
+    - "../Dispatch"
 
 channels:
   - kind: prism
@@ -159,13 +155,14 @@ Manager is intentionally minimal -- it's an Anthem instance whose power comes fr
 
 ## Anthem Integration
 
-Manager uses Anthem's lean channel-only mode, a lightweight path added specifically for agents that only need channel communication:
+Manager runs as a full Anthem orchestrator agent with an additional lean fast path:
 
-- **Lean message handler**: `handleLeanMessage` in Anthem's orchestrator invokes `claude -p` directly instead of the full orchestrator/executor pipeline
-- **Optional tracker**: Manager runs with no `tracker` config -- Anthem skips the polling loop and only runs the channel listener
+- **Full orchestrator**: GitHub issue tracking, multi-turn Claude sessions, workspace management for self-maintenance
+- **Lean `/fast` path**: `handleLeanMessage` in Anthem's orchestrator invokes `claude -p` directly, bypassing the orchestrator pipeline for instant responses
+- **`/status` fast path**: The lean handler also powers the `/status` slash command across all agents for fast, lightweight status checks
+- **Unified Prism tab**: Manager's built-in tab in Prism serves as both the portfolio dashboard and the agent chat interface -- no duplicate tabs
 - **Streaming**: Real-time token streaming via Anthem's `stream` frame type
 - **Display frames**: Rich visual content via Anthem's `display` frame type with A2UI components
-- **`/status` fast path**: The lean handler also powers the `/status` slash command across all agents for fast, lightweight status checks
 
 ## License
 

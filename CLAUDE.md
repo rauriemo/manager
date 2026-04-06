@@ -2,31 +2,21 @@
 
 ## What Is Manager
 
-Manager is a **lightweight portfolio-level oversight agent**. It is an Anthem instance running in **lean channel-only mode** -- no issue tracker, no orchestrator session, no workspaces, no code editing. It reads source code and metadata across all sibling agent projects and answers questions about the portfolio using `claude -p`.
+Manager is a **full Anthem orchestrator agent** with portfolio-level visibility. It runs the complete Anthem pipeline -- GitHub issue tracker, orchestrator, workspace management -- and can edit its own codebase. It also serves as the portfolio oversight hub via the `/fast` slash command, which uses Anthem's lean `claude -p` path for quick, read-only queries across all sibling projects.
 
-Manager is the "read-only analyst" of the ecosystem. Users interact with it through Prism's Manager tab. It can produce rich visual output (HTML dashboards, charts, data grids, markdown) that Prism renders in the visual pane.
+Users interact with Manager through Prism's built-in Manager tab. Regular messages go through the full orchestrator for thoughtful, multi-turn responses. `/fast <message>` bypasses the orchestrator for instant lightweight replies. Manager can produce rich visual output (HTML dashboards, charts, data grids, markdown) that Prism renders in the visual pane.
 
-## What Manager Is NOT
+## Dual-Mode Architecture
 
-- **Not a code editor.** Manager never edits, writes, or creates files in any project.
-- **Not a router or proxy.** It does not forward messages to other agents.
-- **Not a full Anthem agent.** It deliberately skips the orchestrator, issue tracker, workspace manager, retry engine, and rules engine.
-- **Not a long-running session.** Each user question is answered via a single `claude -p` invocation with gathered context.
+Manager operates in two modes depending on how the user sends a message:
 
-## Architecture: Lean Channel-Only Mode
+### Full Orchestrator (default)
+Regular chat messages go through Anthem's complete pipeline: issue tracking, orchestrator agent consultation, workspace management, code editing. This is how Manager maintains its own codebase.
 
-Manager uses Anthem's Prism channel adapter for WebSocket communication but bypasses the heavyweight orchestrator pipeline. The flow:
+### Fast/Lean Mode (`/fast` command)
+Messages prefixed with `/fast` (which Prism translates to `[system:fast]`) bypass the orchestrator entirely. Anthem's `handleLeanMessage` builds a prompt and invokes `claude -p` for a single-shot response. This is ideal for portfolio status checks, code review queries, and quick questions.
 
-1. User sends a chat message in Prism's Manager tab
-2. Prism sends a WebSocket `req` frame to Manager (port 3106)
-3. Anthem's Prism adapter receives the message, routes to `HandleUserMessage`
-4. `HandleUserMessage` detects `orchAgent == nil` (orchestrator disabled) and calls `handleLeanMessage`
-5. `handleLeanMessage` builds a prompt from the user's message + project context (`CLAUDE.md`)
-6. Invokes `claude -p "<prompt>"` and streams stdout back as `stream` frames
-7. On completion, sends the full response as a `res` frame
-8. Any structured display output (JSON blocks) is sent as `display` frames
-
-This is the same `handleLeanMessage` path that all Anthem agents use for `/status` queries. For Manager, it's the only path.
+The same lean path powers `/status` queries across all agents.
 
 ## Plans and Architecture Docs
 
@@ -57,6 +47,8 @@ Manager operates within a system of interconnected projects, all living as sibli
 When answering questions, Manager gathers context from two sources:
 
 ### 1. Local Directories (Primary -- Fast, Offline)
+
+Manager's `WORKFLOW.md` includes `additional_dirs` entries for all sibling projects (`../prism`, `../anthem`, `../forge`, `../Dispatch`). This means your Claude Code sandbox can read files directly from those directories -- no need for absolute paths or workarounds.
 
 Read source code, configs, and git history directly from sibling project directories:
 
@@ -187,9 +179,9 @@ Manager has no application code of its own -- it's purely configuration and docu
 
 ## Current Status
 
-**Phase**: Initial build -- channel-only lean mode.
+**Phase**: Full orchestrator agent with lean `/fast` path.
 
-Manager boots as an Anthem instance, connects to Prism on port 3106, and responds to chat messages via `claude -p` with portfolio context. No orchestrator, no issue tracker, no workspaces.
+Manager boots as a full Anthem instance with GitHub issue tracking (`rauriemo/manager`), connects to Prism on port 3106, and handles both orchestrator-driven tasks (via regular chat) and lightweight queries (via `/fast`). The built-in Manager tab in Prism doubles as both the portfolio dashboard and the agent chat interface.
 
 **Planned enhancements (future)**:
 - Skills and MCP tools for expanded capabilities
