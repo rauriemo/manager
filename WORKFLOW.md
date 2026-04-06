@@ -39,9 +39,9 @@ agent:
     - "Bash(rm -rf *)"
     - "Bash(git push --force *)"
   additional_dirs:
+    - "../Forge"
     - "../prism"
     - "../anthem"
-    - "../forge"
     - "../Dispatch"
 
 orchestrator:

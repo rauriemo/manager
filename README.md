@@ -6,7 +6,7 @@
 
 Regular messages go through the full orchestrator for thoughtful, multi-turn responses. `/fast <message>` bypasses the orchestrator for instant `claude -p` replies across all sibling projects. Think of it as a dual-mode agent: project maintainer + portfolio analyst in one.
 
-[Build plan](docs/plan.md) | [Anthem](https://github.com/rauriemo/anthem) (orchestrator) | [Prism](https://github.com/rauriemo/prism) (workstation) | [Forge](https://github.com/rauriemo/forge) (scaffolder) | [Dispatch](https://github.com/rauriemo/dispatch) (voice channel)
+[Build plan](docs/plan.md) | [forge](https://github.com/rauriemo/forge) (scaffolder) | [prism](https://github.com/rauriemo/prism) (workstation) | [anthem](https://github.com/rauriemo/anthem) (orchestrator) | [dispatch](https://github.com/rauriemo/dispatch) (voice channel)
 
 ## Quick Start
 
@@ -90,9 +90,9 @@ agent:
     - "Bash(git *)"
     - "Bash(gh *)"
   additional_dirs:
+    - "../Forge"
     - "../prism"
     - "../anthem"
-    - "../forge"
     - "../Dispatch"
 
 channels:
@@ -122,22 +122,22 @@ Local reads are preferred -- they're instant and work offline. GitHub API fills 
 
 ## Ecosystem
 
-Manager is part of the Anthem ecosystem:
+Manager is part of the anthem ecosystem:
 
-- **[Anthem](https://github.com/rauriemo/anthem)** -- Go orchestrator daemon. Polls GitHub issues, dispatches Claude Code workers, manages workspaces. Manager runs as a lean Anthem instance.
-- **[Prism](https://github.com/rauriemo/prism)** -- Interactive visual workstation. Chat, A2UI canvas, TTS/STT. Manager's primary interface.
-- **[Forge](https://github.com/rauriemo/forge)** -- Project scaffolding agent. Creates new Anthem projects with workflow configs.
-- **[Dispatch](https://github.com/rauriemo/dispatch)** -- Voice-first command channel. Wake-word activation, ambient voice.
+- **[forge](https://github.com/rauriemo/forge)** -- Project scaffolding agent. Creates new anthem projects with workflow configs.
+- **[prism](https://github.com/rauriemo/prism)** -- Interactive visual workstation. Chat, A2UI canvas, TTS/STT. Manager's primary interface.
+- **[anthem](https://github.com/rauriemo/anthem)** -- Go orchestrator daemon. Polls GitHub issues, dispatches Claude Code workers, manages workspaces. Manager runs as an anthem instance.
+- **[dispatch](https://github.com/rauriemo/dispatch)** -- Voice-first command channel. Wake-word activation, ambient voice.
 
 ### Portfolio
 
 | Project | Repo | Port | Role |
 |---------|------|------|------|
-| Prism | [rauriemo/prism](https://github.com/rauriemo/prism) | 3100/3101 | Visual workstation |
-| Manager | [rauriemo/manager](https://github.com/rauriemo/Manager) | 3106 | Portfolio oversight (this project) |
-| Forge | [rauriemo/forge](https://github.com/rauriemo/forge) | 3102 | Project scaffolding |
-| Anthem | [rauriemo/anthem](https://github.com/rauriemo/anthem) | 3105 | Go orchestrator daemon |
-| Dispatch | [rauriemo/dispatch](https://github.com/rauriemo/dispatch) | 3104 | Voice command channel |
+| manager | [rauriemo/manager](https://github.com/rauriemo/manager) | 3106 | Portfolio oversight (this project) |
+| forge | [rauriemo/forge](https://github.com/rauriemo/forge) | 3102 | Project scaffolding |
+| prism | [rauriemo/prism](https://github.com/rauriemo/prism) | 3100/3101 | Visual workstation |
+| anthem | [rauriemo/anthem](https://github.com/rauriemo/anthem) | 3105 | Go orchestrator daemon |
+| dispatch | [rauriemo/dispatch](https://github.com/rauriemo/dispatch) | 3104 | Voice command channel |
 
 ## Project Structure
 

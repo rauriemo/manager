@@ -28,19 +28,19 @@ Manager operates within a system of interconnected projects, all living as sibli
 
 | Project | Local Path | GitHub Repo | Port | Role |
 |---------|-----------|-------------|------|------|
-| **Prism** | `C:\Users\I9 Ultra\prism` | `rauriemo/prism` | 3100 (HTTP), 3101 (WS) | Visual workstation -- A2UI canvas, chat, TTS, STT |
-| **Manager** | `C:\Users\I9 Ultra\Manager` | `rauriemo/manager` | 3106 (WS) | Portfolio oversight (this project) |
-| **Forge** | `C:\Users\I9 Ultra\Forge` | `rauriemo/forge` | 3102 (WS) | Project scaffolding agent |
-| **Anthem** | `C:\Users\I9 Ultra\anthem` | `rauriemo/anthem` | 3105 (WS) | Go orchestrator daemon (the runtime for all agents) |
-| **Dispatch** | `C:\Users\I9 Ultra\Dispatch` | `rauriemo/dispatch` | 3104 (WS) | Voice-first command channel |
+| **manager** | `C:\Users\I9 Ultra\Manager` | `rauriemo/manager` | 3106 (WS) | Portfolio oversight (this project) |
+| **forge** | `C:\Users\I9 Ultra\Forge` | `rauriemo/forge` | 3102 (WS) | Project scaffolding agent |
+| **prism** | `C:\Users\I9 Ultra\prism` | `rauriemo/prism` | 3100 (HTTP), 3101 (WS) | Visual workstation -- A2UI canvas, chat, TTS, STT |
+| **anthem** | `C:\Users\I9 Ultra\anthem` | `rauriemo/anthem` | 3105 (WS) | Go orchestrator daemon (the runtime for all agents) |
+| **dispatch** | `C:\Users\I9 Ultra\Dispatch` | `rauriemo/dispatch` | 3104 (WS) | Voice-first command channel |
 
 ### How Projects Relate
 
-- **Anthem** is the runtime. Every agent project (including Manager) IS an Anthem instance.
-- **Prism** is the visual frontend. It connects to all agents via WebSocket and provides chat, visual display, voice I/O.
-- **Forge** creates new agent projects. It scaffolds directories, writes WORKFLOW.md, registers agents.
-- **Dispatch** is the voice channel. Ambient, always-on voice commands.
-- **Manager** (this project) has cross-project visibility. It reads code and metadata from all siblings.
+- **anthem** is the runtime. Every agent project (including manager) IS an anthem instance.
+- **prism** is the visual frontend. It connects to all agents via WebSocket and provides chat, visual display, voice I/O.
+- **forge** creates new agent projects. It scaffolds directories, writes WORKFLOW.md, registers agents.
+- **dispatch** is the voice channel. Ambient, always-on voice commands.
+- **manager** (this project) has cross-project visibility. It reads code and metadata from all siblings.
 
 ## Context Gathering Strategy
 
@@ -48,7 +48,7 @@ When answering questions, Manager gathers context from two sources:
 
 ### 1. Local Directories (Primary -- Fast, Offline)
 
-Manager's `WORKFLOW.md` includes `additional_dirs` entries for all sibling projects (`../prism`, `../anthem`, `../forge`, `../Dispatch`). This means your Claude Code sandbox can read files directly from those directories -- no need for absolute paths or workarounds.
+Manager's `WORKFLOW.md` includes `additional_dirs` entries for all sibling projects (forge, prism, anthem, dispatch). This means your Claude Code sandbox can read files directly from those directories -- no need for absolute paths or workarounds.
 
 Read source code, configs, and git history directly from sibling project directories:
 
@@ -161,13 +161,13 @@ Read these for full context when answering cross-project questions:
 
 | File | What It Tells You |
 |------|-------------------|
-| `C:\Users\I9 Ultra\prism\CLAUDE.md` | Prism architecture, design decisions, current status |
-| `C:\Users\I9 Ultra\anthem\CLAUDE.md` | Anthem architecture, all phases, design decisions |
-| `C:\Users\I9 Ultra\Forge\CLAUDE.md` | Forge architecture, scaffolding API, voice/port allocation |
-| `C:\Users\I9 Ultra\Dispatch\CLAUDE.md` | Dispatch architecture, voice commands, wake words |
+| `C:\Users\I9 Ultra\Forge\CLAUDE.md` | forge architecture, scaffolding API, voice/port allocation |
+| `C:\Users\I9 Ultra\prism\CLAUDE.md` | prism architecture, design decisions, current status |
 | `C:\Users\I9 Ultra\prism\backend\agents.yaml` | All registered agents with endpoints, voices, repos |
+| `C:\Users\I9 Ultra\anthem\CLAUDE.md` | anthem architecture, all phases, design decisions |
 | `C:\Users\I9 Ultra\anthem\internal\config\config.go` | All WORKFLOW.md config fields |
-| `C:\Users\I9 Ultra\anthem\internal\channel\prism\adapter.go` | Prism WebSocket protocol implementation |
+| `C:\Users\I9 Ultra\anthem\internal\channel\prism\adapter.go` | prism WebSocket protocol implementation |
+| `C:\Users\I9 Ultra\Dispatch\CLAUDE.md` | dispatch architecture, voice commands, wake words |
 
 ## Coding Standards
 
