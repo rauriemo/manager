@@ -1,0 +1,53 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate WORKFLOW.md YAML front matter
+        run: |
+          python3 -c "
+          import yaml, sys
+          with open('WORKFLOW.md') as f:
+              content = f.read()
+          parts = content.split('---', 2)
+          if len(parts) < 3:
+              print('ERROR: WORKFLOW.md missing YAML front matter (--- delimiters)')
+              sys.exit(1)
+          try:
+              cfg = yaml.safe_load(parts[1])
+              if not isinstance(cfg, dict):
+                  print('ERROR: YAML front matter is not a mapping')
+                  sys.exit(1)
+              print('WORKFLOW.md YAML front matter is valid')
+              print(f'  Keys: {list(cfg.keys())}')
+          except yaml.YAMLError as e:
+              print(f'ERROR: Invalid YAML in WORKFLOW.md: {e}')
+              sys.exit(1)
+          "
+
+      - name: Check required files exist
+        run: |
+          for f in CLAUDE.md WORKFLOW.md README.md .gitignore; do
+            if [ ! -f "$f" ]; then
+              echo "ERROR: Missing required file: $f"
+              exit 1
+            fi
+            echo "OK: $f"
+          done
+
+      - name: Lint markdown
+        uses: DavidAnson/markdownlint-cli2-action@v19
+        with:
+          globs: '**/*.md'
+          config: |
+            {
+              "MD013": false,
+              "MD033": false,
+              "MD041": false,
+              "MD024": false,
+              "MD040": false
+            }
