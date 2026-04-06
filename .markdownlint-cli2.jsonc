@@ -1,7 +1,13 @@
 {
-  "MD013": false,
-  "MD033": false,
-  "MD041": false,
-  "MD024": false,
-  "MD040": false
+  "config": {
+    "MD013": false,
+    "MD022": false,
+    "MD031": false,
+    "MD032": false,
+    "MD033": false,
+    "MD040": false,
+    "MD041": false,
+    "MD024": false
+  },
+  "ignores": ["docs/plan.md", "docs/anthem-lean-mode-prompt.md"]
 }
