@@ -16,6 +16,9 @@ channels:
   - kind: prism
     target: "localhost:3106"
     events: [task.completed, task.failed]
+  - kind: voice
+    target: "manager-voice"
+
 agent:
   command: "claude"
   max_turns: 10
