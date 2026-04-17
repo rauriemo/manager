@@ -88,7 +88,7 @@ Use `Read`, `Grep`, `Glob`, and `Bash(git ...)` to inspect their source code, co
 ## Project Structure
 
 - `CLAUDE.md` — Full project context and architecture
-- `WORKFLOW.md` — This file (full orchestrator config, `/fast` uses lean path automatically)
+- `WORKFLOW.md` — This file. Declares a `tracker:` block so Loop mode is active for self-maintenance. Chat / Plan / Execute are always available. `/fast` uses Chat mode's lean `claude -p` branch automatically.
 - `README.md` — Public documentation
 - `.github/workflows/ci.yml` — CI pipeline
 - `docs/` — Plans and prompts

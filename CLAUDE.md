@@ -2,21 +2,28 @@
 
 ## What Is Manager
 
-Manager is a **full Anthem orchestrator agent** with portfolio-level visibility. It runs the complete Anthem pipeline -- GitHub issue tracker, orchestrator, workspace management -- and can edit its own codebase. It also serves as the portfolio oversight hub via the `/fast` slash command, which uses Anthem's lean `claude -p` path for quick, read-only queries across all sibling projects.
+Manager is an **Anthem project agent runtime** with portfolio-level visibility. It runs with **Loop mode enabled** (tracker-backed self-maintenance on `rauriemo/manager`) and responds to portfolio-wide questions in Chat mode across all sibling projects. Plan and Execute modes are available for coordinating multi-repo changes.
 
-Users interact with Manager through Prism's built-in Manager tab. Regular messages go through the full orchestrator for thoughtful, multi-turn responses. `/fast <message>` bypasses the orchestrator for instant lightweight replies. Manager can produce rich visual output (HTML dashboards, charts, data grids, markdown) that Prism renders in the visual pane.
+Users interact with Manager through Prism's built-in Manager tab. Regular messages use Chat mode. `/fast <message>` takes the lean `claude -p` branch for instant lightweight replies (legacy `[system:fast]` tag that remaps to Chat's lean path). Manager can produce rich visual output (HTML dashboards, charts, data grids, markdown) that Prism renders in the visual pane; during multi-repo Execute runs it also drives the execution panel via `execution.*` events.
 
-## Dual-Mode Architecture
+## Modes
 
-Manager operates in two modes depending on how the user sends a message:
+Manager supports all four Anthem modes. The mode router picks one based on the `[system:<mode>]` tag in the incoming frame (default = Chat).
 
-### Full Orchestrator (default)
-Regular chat messages go through Anthem's complete pipeline: issue tracking, orchestrator agent consultation, workspace management, code editing. This is how Manager maintains its own codebase.
+### Chat (default)
+Portfolio analyst. Reads source code, git history, and GitHub data across sibling repos (`additional_dirs`) and answers conversationally. Produces A2UI display frames (HTML dashboards, data grids, charts) as part of the response.
 
-### Fast/Lean Mode (`/fast` command)
-Messages prefixed with `/fast` (which Prism translates to `[system:fast]`) bypass the orchestrator entirely. Anthem's `handleLeanMessage` builds a prompt and invokes `claude -p` for a single-shot response. This is ideal for portfolio status checks, code review queries, and quick questions.
+### Plan
+Used when a portfolio-wide change requires coordinated work across repos. The orchestrator synthesizes an `ExecutionPlan` with steps scoped to specific repos and, if needed, guest agents.
 
-The same lean path powers `/status` queries across all agents.
+### Execute
+`PlanRunner` dispatches the approved plan's steps. For portfolio work this usually means one repo per step with approval gates between phases. Emits `execution.*` events consumed by Prism's execution panel.
+
+### Loop
+`GitHubLoopBackend` polls `rauriemo/manager` and dispatches Claude Code workers for issue-driven self-maintenance. Uses the standard Anthem tick -> reconcile -> dispatch pipeline.
+
+### `/fast` (legacy lean path)
+`/fast` (Prism translates to `[system:fast]`) and `/status` take Chat mode's lean branch, which invokes `claude -p` directly for a single-shot response. Ideal for instant portfolio status checks and code review queries. Works from every agent tab in Prism, not just Manager.
 
 ## Plans and Architecture Docs
 
@@ -179,9 +186,9 @@ Manager has no application code of its own -- it's purely configuration and docu
 
 ## Current Status
 
-**Phase**: Full orchestrator agent with lean `/fast` path.
+**Phase**: Project agent runtime with Chat + Plan + Execute + Loop, plus the lean `/fast` branch.
 
-Manager boots as a full Anthem instance with GitHub issue tracking (`rauriemo/manager`), connects to Prism on port 3106, and handles both orchestrator-driven tasks (via regular chat) and lightweight queries (via `/fast`). The built-in Manager tab in Prism doubles as both the portfolio dashboard and the agent chat interface.
+Manager boots as an Anthem project agent runtime with GitHub issue tracking (`rauriemo/manager`) enabled for Loop mode, connects to Prism on port 3106, and handles portfolio queries (Chat / `/fast`), multi-repo change synthesis (Plan), coordinated cross-repo execution (Execute with approval gates), and self-maintenance (Loop). The built-in Manager tab in Prism doubles as both the portfolio dashboard and the agent chat interface.
 
 **Planned enhancements (future)**:
 - Skills and MCP tools for expanded capabilities
