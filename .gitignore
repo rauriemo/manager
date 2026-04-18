@@ -1,3 +1,6 @@
 workspaces/
 .env
 *.db
+
+# Anthem runtime
+.agents-index.json
