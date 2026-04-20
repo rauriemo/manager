@@ -31,15 +31,15 @@ Used when a portfolio-wide change requires coordinated work across repos. The or
 
 ## Ecosystem Overview
 
-Manager operates within a system of interconnected projects, all living as sibling directories under `C:\Users\I9 Ultra\`:
+Manager operates within a system of interconnected projects, all living as sibling directories under `C:\Users\rafa\Projects\`:
 
 | Project | Local Path | GitHub Repo | Port | Role |
 |---------|-----------|-------------|------|------|
-| **manager** | `C:\Users\I9 Ultra\Manager` | `rauriemo/manager` | 3106 (WS) | Portfolio oversight (this project) |
-| **forge** | `C:\Users\I9 Ultra\Forge` | `rauriemo/forge` | 3102 (WS) | Project scaffolding agent |
-| **prism** | `C:\Users\I9 Ultra\prism` | `rauriemo/prism` | 3100 (HTTP), 3101 (WS) | Visual workstation -- A2UI canvas, chat, TTS, STT |
-| **anthem** | `C:\Users\I9 Ultra\anthem` | `rauriemo/anthem` | 3105 (WS) | Go orchestrator daemon (the runtime for all agents) |
-| **dispatch** | `C:\Users\I9 Ultra\Dispatch` | `rauriemo/dispatch` | 3104 (WS) | Voice-first command channel |
+| **manager** | `C:\Users\rafa\Projects\manager` | `rauriemo/manager` | 3106 (WS) | Portfolio oversight (this project) |
+| **forge** | `C:\Users\rafa\Projects\forge` | `rauriemo/forge` | 3102 (WS) | Project scaffolding agent |
+| **prism** | `C:\Users\rafa\Projects\prism` | `rauriemo/prism` | 3100 (HTTP), 3101 (WS) | Visual workstation -- A2UI canvas, chat, TTS, STT |
+| **anthem** | `C:\Users\rafa\Projects\anthem` | `rauriemo/anthem` | 3105 (WS) | Go orchestrator daemon (the runtime for all agents) |
+| **dispatch** | `C:\Users\rafa\Projects\dispatch` | `rauriemo/dispatch` | 3104 (WS) | Voice-first command channel |
 
 ### How Projects Relate
 
@@ -168,13 +168,13 @@ Read these for full context when answering cross-project questions:
 
 | File | What It Tells You |
 |------|-------------------|
-| `C:\Users\I9 Ultra\Forge\CLAUDE.md` | forge architecture, scaffolding API, voice/port allocation |
-| `C:\Users\I9 Ultra\prism\CLAUDE.md` | prism architecture, design decisions, current status |
-| `C:\Users\I9 Ultra\prism\backend\agents.yaml` | All registered agents with endpoints, voices, repos |
-| `C:\Users\I9 Ultra\anthem\CLAUDE.md` | anthem architecture, all phases, design decisions |
-| `C:\Users\I9 Ultra\anthem\internal\config\config.go` | All WORKFLOW.md config fields |
-| `C:\Users\I9 Ultra\anthem\internal\channel\prism\adapter.go` | prism WebSocket protocol implementation |
-| `C:\Users\I9 Ultra\Dispatch\CLAUDE.md` | dispatch architecture, voice commands, wake words |
+| `C:\Users\rafa\Projects\forge\CLAUDE.md` | forge architecture, scaffolding API, voice/port allocation |
+| `C:\Users\rafa\Projects\prism\CLAUDE.md` | prism architecture, design decisions, current status |
+| `C:\Users\rafa\Projects\prism\backend\agents.yaml` | All registered agents with endpoints, voices, repos |
+| `C:\Users\rafa\Projects\anthem\CLAUDE.md` | anthem architecture, all phases, design decisions |
+| `C:\Users\rafa\Projects\anthem\internal\config\config.go` | All WORKFLOW.md config fields |
+| `C:\Users\rafa\Projects\anthem\internal\channel\prism\adapter.go` | prism WebSocket protocol implementation |
+| `C:\Users\rafa\Projects\dispatch\CLAUDE.md` | dispatch architecture, voice commands, wake words |
 
 ## Coding Standards
 

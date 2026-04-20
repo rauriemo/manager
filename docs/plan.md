@@ -65,9 +65,9 @@ flowchart LR
 
 ## Part 1: Upstream Anthem Change (Small)
 
-Currently, [`HandleUserMessage`](c:\Users\I9 Ultra\anthem\internal\orchestrator\orchestrator.go) at line 1159 checks `o.orchAgent == nil` and returns "Orchestrator agent is not enabled." We need a **lean fallback path** here that invokes `claude -p` directly instead.
+Currently, [`HandleUserMessage`](c:\Users\rafa\Projects\anthem\internal\orchestrator\orchestrator.go) at line 1159 checks `o.orchAgent == nil` and returns "Orchestrator agent is not enabled." We need a **lean fallback path** here that invokes `claude -p` directly instead.
 
-**File:** `c:\Users\I9 Ultra\anthem\internal\orchestrator\orchestrator.go`
+**File:** `c:\Users\rafa\Projects\anthem\internal\orchestrator\orchestrator.go`
 
 The change at line 1159-1161:
 ```go
@@ -96,7 +96,7 @@ This is ~80-120 lines of new code in `orchestrator.go`. No new files needed.
 
 **Also needed in Anthem:** Make the `tracker` config block optional. Currently Anthem expects a tracker to be configured. When `tracker.kind` is empty, the orchestrator should skip `ListActive` calls and the polling loop entirely, only running the channel listener.
 
-**File:** `c:\Users\I9 Ultra\anthem\cmd\anthem\main.go` -- skip tracker/poller creation when `cfg.Tracker.Kind == ""`
+**File:** `c:\Users\rafa\Projects\anthem\cmd\anthem\main.go` -- skip tracker/poller creation when `cfg.Tracker.Kind == ""`
 
 ## Part 1b: Lean /status for All Agents
 
@@ -104,7 +104,7 @@ Currently `/status` sends a `[system:status]` prompt through the full orchestrat
 
 **Change:** In `HandleUserMessage`, detect messages containing `[system:status]` and route them through `handleLeanMessage` (the same `claude -p` path) **even when the orchestrator agent is present**. This gives every agent a fast, lightweight `/status` response without spinning up the full contract/action machinery.
 
-**File:** `c:\Users\I9 Ultra\anthem\internal\orchestrator\orchestrator.go`
+**File:** `c:\Users\rafa\Projects\anthem\internal\orchestrator\orchestrator.go`
 
 The detection goes at the top of `HandleUserMessage`, after the ack but before `ListActive`:
 
@@ -120,7 +120,7 @@ This means `handleLeanMessage` must work regardless of whether `orchAgent` is ni
 
 ## Part 2: Manager Project Files
 
-All files go in `C:\Users\I9 Ultra\Manager\`.
+All files go in `C:\Users\rafa\Projects\manager\`.
 
 ### WORKFLOW.md
 
@@ -195,7 +195,7 @@ workspaces/
 
 ### 3a. Add `ensure_manager()` to `setup.py`
 
-**File:** [`c:\Users\I9 Ultra\prism\backend\setup.py`](c:\Users\I9 Ultra\prism\backend\setup.py)
+**File:** [`c:\Users\rafa\Projects\prism\backend\setup.py`](c:\Users\rafa\Projects\prism\backend\setup.py)
 
 Mirror the `ensure_forge()` pattern (lines 32-55):
 - Add `MANAGER_REPO = "https://github.com/rauriemo/Manager.git"` constant
@@ -205,7 +205,7 @@ Mirror the `ensure_forge()` pattern (lines 32-55):
 
 ### 3b. Add `repo` field to agents.yaml
 
-**File:** [`c:\Users\I9 Ultra\prism\backend\agents.yaml`](c:\Users\I9 Ultra\prism\backend\agents.yaml)
+**File:** [`c:\Users\rafa\Projects\prism\backend\agents.yaml`](c:\Users\rafa\Projects\prism\backend\agents.yaml)
 
 Add `repo: rauriemo/manager` to the `manager` entry (currently missing, unlike all other agents).
 

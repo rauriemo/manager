@@ -6,7 +6,7 @@ Read these files first:
 - internal/agent/agent.go (AgentRunner interface)
 - internal/channel/channel.go (IncomingMessage, OutgoingMessage types)
 - cmd/anthem/main.go (createTracker at line 403, orchestrator wiring at lines 118-297)
-- C:/Users/I9 Ultra/Manager/docs/plan.md (Manager build plan -- read this for full context on what we're building and why)
+- C:/Users/rafa/Projects/Manager/docs/plan.md (Manager build plan -- read this for full context on what we're building and why)
 
 ## CHANGE 1: Add handleLeanMessage to orchestrator.go
 
